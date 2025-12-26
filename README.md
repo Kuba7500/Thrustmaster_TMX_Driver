@@ -11,6 +11,10 @@ This repository contains `install.sh`, a script authored by me to automate insta
 
 To install drivers for your Thrustmaster TMX you need to follow those few, simple steps:
 
+**Note:**
+Always use sudo bash ./install.sh – direct sudo ./install.sh will fail because sudo excludes the current directory from PATH for security reasons.
+Follow the on-screen instructions. When everything is done, restart your computer or reconnect the wheel – full Force Feedback should work automatically.
+
 1. **Clone this repository:**
 
 In terminal of your choice type: git clone https://github.com/Kuba7500/Thrustmaster_TMX_Driver.git
@@ -21,14 +25,19 @@ After cloning the repo, you have to enter the folder where you've cloned it by s
 When you make sure, that you are in the right folder you only need to run a command (and this is for the first time installing):
 **chmod +x install.sh**
 
-3. **Follow the instructions shown in your terminal**
+3. **Run the installation script**
+
+To install it, run this command in the terminal: **sudo bash ./install.sh**
+It's very important to not forget that **bash**
+
+4. **Follow the instructions shown in your terminal**
 When everything is done, close the window and your steering wheel should work.
 
 ## Uninstalling
 
 To uninstall drivers for your Thrustamster TMX you need to type out just 1, simple command:
 
-**sudo ./install.sh uninstall**
+**sudo bash ./install.sh uninstall**
 
 (Dont forget that "uninstall" argument!)
 
