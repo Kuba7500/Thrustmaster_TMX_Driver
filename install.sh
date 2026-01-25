@@ -12,8 +12,10 @@ case "$LANG" in
     pl*) L="PL" ;;
     es*|pt*) L="ES" ;;
     de*) L="DE" ;;
+    fr*) L="FR" ;;
     *) L="EN" ;;
 esac
+
 
 # If You are reading this, I suggest sending me an e-mail about how the installation went.
 # Contact me at: jakubjaki55@gmail.com
@@ -52,6 +54,23 @@ elif [ "$L" == "ES" ]; then
     MSG_SRV_DONE="Servicio configurado y en funcionamiento."
     MSG_SRV_SETUP="Configurando el servicio TMDRV."
     MSG_DWNLD_TMDRV="Descargando TMDRV."
+
+elif [ "$L" == "FR" ]; then
+    MSG_PLUG="Veuillez connecter votre volant Thrustmaster avant de continuer."
+    MSG_UN_PLUG="Veuillez déconnecter votre volant Thrustmaster avant de continuer."
+    MSG_DETECTION="Détection de la distribution Linux..."
+    MSG_DONE="Installation terminée avec succès !"
+    MSG_ENTER="Appuyez sur ENTRÉE pour continuer..."
+    MSG_UNINSTALLING="Désinstallation des pilotes T150 et TMDRV."
+    MSG_INSTALLING_DKHD="Installation des en-têtes du noyau et de DKMS."
+    MSG_STOP_SERVICE="Arrêt et suppression des services système."
+    MSG_UNINSTALL_CMPLT="Désinstallation terminée avec succès."
+    MSG_UNSUPPORTED_SYS="Système non pris en charge."
+    MSG_PACKAGE_MGR="Votre gestionnaire de paquets est : "
+    MSG_T150_DVR="Téléchargement du pilote T150 (nécessaire pour le TMX) !"
+    MSG_SRV_DONE="Service configuré et en cours d’exécution."
+    MSG_SRV_SETUP="Configuration du service TMDRV."
+    MSG_DWNLD_TMDRV="Téléchargement de TMDRV."
 
 elif [ "$L" == "DE" ]; then
     MSG_PLUG="Bitte schließen Sie Ihr Thrustmaster-Lenkrad an, bevor Sie fortfahren."
@@ -185,31 +204,35 @@ git clone https://github.com/her001/tmdrv.git
 
 # --- Setup Systemd Service ---
 echo -e "${YELLOW}$MSG_SRV_SETUP${RESET}"
+
 USER_NAME=$(whoami)
 sudo usermod -aG input "$USER_NAME"
-CURRENT_DIR=$(pwd)
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 cat <<EOF | sudo tee /etc/systemd/system/tmdrv.service > /dev/null
 [Unit]
 Description=Thrustmaster TMX Force Feedback Daemon (TMDRV)
-After=graphical-session.target
+After=multi-user.target
 
 [Service]
-WorkingDirectory=$CURRENT_DIR/tmdrv
-ExecStart=/usr/bin/python3 $CURRENT_DIR/tmdrv/tmdrv.py -d thrustmaster_tmx
+Type=simple
+WorkingDirectory=$SCRIPT_DIR/tmdrv
+ExecStartPre=/bin/sleep 1
+ExecStart=/usr/bin/python3 $SCRIPT_DIR/tmdrv/tmdrv.py -d thrustmaster_tmx
 Restart=always
 RestartSec=5
 User=$USER_NAME
 Group=input
 
 [Install]
-WantedBy=graphical-session.target
+WantedBy=multi-user.target
 EOF
 
+sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable tmdrv.service
-sudo systemctl start tmdrv.service
+sudo systemctl restart tmdrv.service
 
 echo -e "${GREEN}$MSG_SRV_DONE${RESET}"
-
 echo -e "${GREEN}$MSG_DONE${RESET}"
