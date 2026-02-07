@@ -182,12 +182,12 @@ fi
 
 # --- Check python-libusb1 ---
 if ! python3 -c "import usb1" &>/dev/null; then
-    echo -e "${YELLOW}python-libusb1...${RESET}"
-    if [ "$PM" == "pacman" ]; then
-        sudo pacman -S --noconfirm python-libusb1
-    else
-        pip3 install --user python-libusb1
-    fi
+    echo -e "${YELLOW}python-libusb1...${RESET}"
+    if [ "$PM" == "pacman" ]; then
+        sudo pacman -S --noconfirm python-libusb1
+    else
+        sudo apt install -y python3-libusb1 || pip3 install python-libusb1 --break-system-packages
+    fi
 fi
 
 # --- Download and install T150 Driver ---
